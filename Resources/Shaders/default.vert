@@ -10,4 +10,8 @@ out vec3 mcol;
 void main(){
     gl_Position = vec4(pos, 1.0);
     mcol = color;
+    // Objects without color attributes display white
+    if (mcol == vec3(0)){
+        mcol = vec3(1);
+    }
 }

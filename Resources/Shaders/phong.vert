@@ -10,13 +10,13 @@ uniform mat4 model, view, projection;
 out vec4 camSpace_pos;
 out vec4 camSpace_norm;
 out vec2 uv;
-out vec3 color;
+out vec3 vertColor;
 
 void main() {
     camSpace_pos = view*model*vec4(objSpace_pos, 1.0);
     camSpace_norm = transpose(inverse(view*model))*vec4(objSpace_norm, 0.0);
     uv = uv_coords;
-    color = obj_color;
+    vertColor = obj_color;
 
     gl_Position = projection*view*model*vec4(objSpace_pos, 1.0);
 }

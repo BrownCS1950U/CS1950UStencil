@@ -2,11 +2,12 @@
 in vec4 camSpace_pos;
 in vec4 camSpace_norm;
 in vec2 uv;
-in vec3 color;
 
+// Which source do we get surface color from:
+uniform int colorSource; // 0 = solid color, 1 = texture color, 2 = per-vertex color
+uniform vec3 objColor;
 uniform sampler2D objTexture;
-uniform bool colorUsed;
-uniform bool texUsed;
+in vec3 vertColor;
 
 uniform mat4 model, view, projection;
 uniform float ka;

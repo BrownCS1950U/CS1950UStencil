@@ -53,7 +53,6 @@ private:
 
         if(!fileStream.is_open()) {
             std::string log = "Could not read file "+std::string(filePath)+". File does not exist.";
-            //std::cerr << "Could not read file " << filePath << ". File does not exist." << std::endl;
             throw std::runtime_error(log);
             return "";
         }

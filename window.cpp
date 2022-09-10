@@ -1,8 +1,11 @@
 #include "window.h"
 
 Window::Window(){
+    std::cout<<"Start"<<std::endl;
     start();
+    std::cout<<"Loop"<<std::endl;
     loop();
+    std::cout<<"End"<<std::endl;
     end();
 }
 

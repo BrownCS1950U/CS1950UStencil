@@ -1,4 +1,8 @@
 #include "texture.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 #include <iostream>
 
 Texture::Texture(glm::vec2 size, GLint internalFormat, GLenum texTarget, GLenum texUnit):
@@ -31,7 +35,7 @@ Texture::Texture(std::string filepath, GLint internalFormat, GLenum texTarget, G
     if (stbi_failure_reason()){
         std::cout << stbi_failure_reason() << std::endl;
     }
-    glTexImage2D(m_texTarget, 0, internalFormat, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(m_texTarget, 0, internalFormat, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
     stbi_image_free(data);
     unbind();
 }
@@ -62,4 +66,8 @@ void Texture::unbind(GLenum texUnit){
 
 GLuint Texture::getHandle(){
     return m_handle;
+}
+
+GLuint Texture::getTexUnit(){
+    return m_texUnit;
 }

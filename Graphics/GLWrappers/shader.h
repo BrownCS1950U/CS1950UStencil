@@ -1,6 +1,6 @@
 #pragma once
 
-#include "shaderloader.h"
+#include "../shaderloader.h"
 
 class Shader{
 public:
@@ -9,6 +9,7 @@ public:
 
     void bind();
     void unbind();
+    GLuint getHandle();
 
 private:
     GLuint m_handle;

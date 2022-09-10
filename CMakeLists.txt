@@ -10,10 +10,10 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #Setting path macros
-set(GLFW_SOURCE_DIR "external/glfw-3.3.8")
-set(GLEW_SOURCE_DIR "external/glew")
-set(GLM_SOURCE_DIR "external/glm-master")
-set(STB_SOURCE_DIR "external/stb")
+set(GLFW_SOURCE_DIR "External/glfw-3.3.8")
+set(GLEW_SOURCE_DIR "External/glew")
+set(GLM_SOURCE_DIR "External/glm-master")
+set(STB_SOURCE_DIR "External/stb")
 
 #GLFW settings
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "")
@@ -40,24 +40,29 @@ add_executable(${PROJECT_NAME}
     Graphics/graphics.h
     Graphics/global.h
     Graphics/debug.h
-    Graphics/vbo.h
-    Graphics/vao.h
+    Graphics/GLWrappers/vbo.h
+    Graphics/GLWrappers/vao.h
     Graphics/camera.h
     Graphics/shaderloader.h
-    Graphics/shader.h
-    Graphics/texture.h
-    Graphics/renderbuffer.h
+    Graphics/GLWrappers/shader.h
+    Graphics/GLWrappers/texture.h
+    Graphics/GLWrappers/renderbuffer.h
+    Graphics/GLWrappers/fbo.h
+    Graphics/material.h
+    Graphics/shapes.h
 
     main.cpp
     window.cpp
     core.cpp
     Graphics/graphics.cpp
-    Graphics/vbo.cpp
-    Graphics/vao.cpp
+    Graphics/GLWrappers/vbo.cpp
+    Graphics/GLWrappers/vao.cpp
     Graphics/camera.cpp
-    Graphics/shader.cpp
-    Graphics/texture.cpp
-    Graphics/renderbuffer.cpp
+    Graphics/GLWrappers/shader.cpp
+    Graphics/GLWrappers/texture.cpp
+    Graphics/GLWrappers/renderbuffer.cpp
+    Graphics/GLWrappers/fbo.cpp
+    Graphics/material.cpp
 
     Resources/Shaders/default.frag
     Resources/Shaders/default.vert

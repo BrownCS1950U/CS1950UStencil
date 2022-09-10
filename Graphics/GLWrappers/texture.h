@@ -5,7 +5,6 @@
 
 #include "glm/glm.hpp"
 
-#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
 class Texture
@@ -20,6 +19,7 @@ public:
     void unbind();
     void unbind(GLenum texUnit);
     GLuint getHandle();
+    GLuint getTexUnit();
 
 private:
     GLuint m_handle;
