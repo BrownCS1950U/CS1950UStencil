@@ -33,7 +33,7 @@ void Window::start(){
 
     glfwMakeContextCurrent(m_GLFWwindow);
 
-    Global::graphics.initializeGLEW();
+    Global::graphics.initializeGLEW(); // IMPORTANT: Can't make ANY OpenGL calls before this occurs!
 
     glfwSwapInterval(1);
 
@@ -41,10 +41,12 @@ void Window::start(){
     m_core = new Core();
 
     // Stores variable in glfw to reference our m_core object. This allows it to be accessed
-    // even in static methods such as keyCallback
+    // even in static methods such as keyCallback and windowSizeCallback
     glfwSetWindowUserPointer(m_GLFWwindow, m_core);
 
     glfwSetKeyCallback(m_GLFWwindow, keyCallback);
+
+    glfwSetWindowSizeCallback(m_GLFWwindow, windowSizeCallback);
 
     glfwSetInputMode(m_GLFWwindow, GLFW_STICKY_KEYS, GLFW_TRUE);
 }
@@ -52,11 +54,13 @@ void Window::start(){
 void Window::loop(){
     while (!glfwWindowShouldClose(m_GLFWwindow))
     {
-        m_core->update(glfwGetTime());
-        glfwSetTime(0);
-
+        if(glfwGetTime() > 1.f/60){
+            m_core->update(glfwGetTime());
+            glfwSetTime(0);
+            glfwSwapBuffers(m_GLFWwindow);
+        }
         // Keep running
-        glfwSwapBuffers(m_GLFWwindow);
+        //glfwSwapBuffers(m_GLFWwindow);
         glfwPollEvents();
     }
 }
@@ -70,4 +74,9 @@ void Window::end(){
 void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods){
     Core* ptr = (Core*)glfwGetWindowUserPointer(window);
     ptr->keyEvent(key, action);
+}
+
+void Window::windowSizeCallback(GLFWwindow* window, int width, int height){
+    Core* ptr = (Core*)glfwGetWindowUserPointer(window);
+    ptr->resizeEvent(width, height);
 }

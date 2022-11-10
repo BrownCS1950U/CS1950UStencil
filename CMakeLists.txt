@@ -49,7 +49,10 @@ add_executable(${PROJECT_NAME}
     Graphics/GLWrappers/renderbuffer.h
     Graphics/GLWrappers/fbo.h
     Graphics/material.h
-    Graphics/shapes.h
+    Graphics/shapedata.h
+    Graphics/shape.h
+    Graphics/modeltransform.h
+    Graphics/light.h
 
     main.cpp
     window.cpp
@@ -63,9 +66,9 @@ add_executable(${PROJECT_NAME}
     Graphics/GLWrappers/renderbuffer.cpp
     Graphics/GLWrappers/fbo.cpp
     Graphics/material.cpp
-
-    Resources/Shaders/default.frag
-    Resources/Shaders/default.vert
+    Graphics/shape.cpp
+    Graphics/modeltransform.cpp
+    Graphics/light.cpp
 )
 
 find_package(OpenGL REQUIRED)
@@ -73,6 +76,7 @@ find_package(OpenGL REQUIRED)
 
 target_link_libraries(${PROJECT_NAME} glfw glew glm)
 
+file( COPY ${CMAKE_CURRENT_SOURCE_DIR}/Resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR} )
 
 if (WIN32)
   add_compile_definitions(GLEW_STATIC)

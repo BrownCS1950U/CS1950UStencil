@@ -1,7 +1,6 @@
 #pragma once
 
 #include "core.h"
-#include <iostream>
 
 class Window
 {
@@ -14,6 +13,7 @@ private:
     void loop();
     void end();
     static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+    static void windowSizeCallback(GLFWwindow* window, int width, int height);
 
     GLFWwindow* m_GLFWwindow;
     Core* m_core;

@@ -5,13 +5,11 @@
 
 #include "glm/glm.hpp"
 
-#include "stb_image.h"
-
 class Texture
 {
 public:
-    Texture(glm::vec2 size, GLint internalFormat = GL_RGB, GLenum texTarget = GL_TEXTURE_2D, GLenum texUnit = GL_TEXTURE0);
-    Texture(std::string filePath, GLint internalFormat = GL_RGB, GLenum texTarget = GL_TEXTURE_2D, GLenum texUnit = GL_TEXTURE0);
+    Texture(int width, int height, GLenum texUnit = GL_TEXTURE0, GLint internalFormat = GL_RGB, GLenum texTarget = GL_TEXTURE_2D);
+    Texture(std::string filePath, GLenum texUnit = GL_TEXTURE0, GLint internalFormat = GL_RGB, GLenum texTarget = GL_TEXTURE_2D);
     ~Texture();
 
     void bind();
@@ -19,7 +17,8 @@ public:
     void unbind();
     void unbind(GLenum texUnit);
     GLuint getHandle();
-    GLuint getTexUnit();
+    GLuint getTexUnitUint();
+    GLenum getTexUnitEnum();
 
 private:
     GLuint m_handle;

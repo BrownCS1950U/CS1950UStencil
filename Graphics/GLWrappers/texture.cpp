@@ -5,7 +5,9 @@
 
 #include <iostream>
 
-Texture::Texture(glm::vec2 size, GLint internalFormat, GLenum texTarget, GLenum texUnit):
+#include "../debug.h"
+
+Texture::Texture(int width, int height, GLenum texUnit, GLint internalFormat, GLenum texTarget):
     m_texTarget(texTarget),
     m_texUnit(texUnit)
 {
@@ -15,11 +17,11 @@ Texture::Texture(glm::vec2 size, GLint internalFormat, GLenum texTarget, GLenum 
     glTexParameteri(m_texTarget, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(m_texTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(m_texTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexImage2D(m_texTarget, 0, internalFormat, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(m_texTarget, 0, internalFormat, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     unbind();
 }
 
-Texture::Texture(std::string filepath, GLint internalFormat, GLenum texTarget, GLenum texUnit):
+Texture::Texture(std::string filepath, GLenum texUnit, GLint internalFormat, GLenum texTarget):
     m_texTarget(texTarget),
     m_texUnit(texUnit)
 {
@@ -27,8 +29,8 @@ Texture::Texture(std::string filepath, GLint internalFormat, GLenum texTarget, G
     bind();
     glTexParameteri(m_texTarget, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(m_texTarget, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(m_texTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(m_texTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(m_texTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(m_texTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     stbi_set_flip_vertically_on_load(1);
     int width, height, numChannels;
     unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &numChannels, 4);
@@ -68,6 +70,10 @@ GLuint Texture::getHandle(){
     return m_handle;
 }
 
-GLuint Texture::getTexUnit(){
+GLuint Texture::getTexUnitUint(){
+    return GLuint(m_texUnit) - GLuint(GL_TEXTURE0);
+}
+
+GLenum Texture::getTexUnitEnum(){
     return m_texUnit;
 }

@@ -1,9 +1,9 @@
 #include "renderbuffer.h"
 
-Renderbuffer::Renderbuffer(glm::vec2 size){
+Renderbuffer::Renderbuffer(int width, int height){
     glGenRenderbuffers(1, &m_handle);
     bind();
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, size.x, size.y);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
     unbind();
 }
 

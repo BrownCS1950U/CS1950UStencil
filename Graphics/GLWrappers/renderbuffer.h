@@ -7,7 +7,7 @@
 class Renderbuffer
 {
 public:
-    Renderbuffer(glm::vec2 size);
+    Renderbuffer(int width, int height);
     ~Renderbuffer();
 
     void bind();

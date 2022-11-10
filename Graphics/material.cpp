@@ -1,9 +1,23 @@
 #include "material.h"
 
-Material::Material(std::shared_ptr<Texture> tex, glm::vec3 color, float shininess, ColorSource colorSource):
-    m_colorSource(colorSource),
-    m_texture(tex),
+Material::Material(glm::vec3 color, float shininess):
+    m_colorSource(ColorSource::SOLID_COLOR),
     m_color(color),
+    m_shininess(shininess)
+{
+
+}
+
+Material::Material(float shininess):
+    m_colorSource(ColorSource::PER_VERTEX_COLOR),
+    m_shininess(shininess)
+{
+
+}
+
+Material::Material(std::shared_ptr<Texture> texture, float shininess):
+    m_colorSource(ColorSource::TEXTURE_COLOR),
+    m_texture(texture),
     m_shininess(shininess)
 {
 
@@ -13,21 +27,34 @@ Material::~Material(){
 
 }
 
-void Material::use(std::shared_ptr<Shader> activeShader){
-    GLuint shader = activeShader->getHandle();
-    switch(m_colorSource){
-        case ColorSource::SOLID_COLOR:
-            glUniform1i(glGetUniformLocation(shader, "colorSource"), 0);
-            glUniform3f(glGetUniformLocation(shader, "objColor"), m_color.r, m_color.g, m_color.b);
-            break;
-        case ColorSource::TEXTURE_COLOR:
-            glUniform1i(glGetUniformLocation(shader, "colorSource"), 1);
-            m_texture->bind();
-            glUniform1i(glGetUniformLocation(shader, "objTexture"), m_texture->getTexUnit());
-            break;
-        case ColorSource::PER_VERTEX_COLOR:
-            glUniform1i(glGetUniformLocation(shader, "colorSource"), 2);
-            break;
-    }
-    glUniform1f(glGetUniformLocation(shader, "shininess"), m_shininess);
+ColorSource Material::getColorSource(){
+    return m_colorSource;
+}
+
+void Material::setColorSource(ColorSource source){
+    m_colorSource = source;
+}
+
+std::shared_ptr<Texture> Material::getTexture(){
+    return m_texture;
+}
+
+void Material::setTexture(std::shared_ptr<Texture> texture){
+    m_texture = texture;
+}
+
+glm::vec3 Material::getColor(){
+    return m_color;
+}
+
+void Material::setColor(glm::vec3 color){
+    m_color = color;
+}
+
+float Material::getShininess(){
+    return m_shininess;
+}
+
+void Material::setShininess(float shininess){
+    m_shininess = shininess;
 }
