@@ -2,7 +2,6 @@
 
 Shader::Shader(std::vector<GLenum> shaderTypes, std::vector<const char*> filepaths){
     m_handle = ShaderLoader::createShaderProgram(shaderTypes, filepaths);  
-    unbind();
 }
 
 Shader::~Shader(){
@@ -44,6 +43,7 @@ void Shader::setMaterial(std::shared_ptr<Material> material){
 void Shader::setCamera(std::shared_ptr<Camera> camera){
     glUniformMatrix4fv(glGetUniformLocation(m_handle, "view"), 1, GL_FALSE, glm::value_ptr(camera->getView()[0]));
     glUniformMatrix4fv(glGetUniformLocation(m_handle, "projection"), 1, GL_FALSE, glm::value_ptr(camera->getProjection()[0]));
+    glUniform3f(glGetUniformLocation(m_handle, "worldSpace_camPos"), camera->getPos().x, camera->getPos().y, camera->getPos().z);
 }
 
 void Shader::setModelTransform(std::shared_ptr<ModelTransform> modelTransform){
@@ -54,18 +54,18 @@ void Shader::setGlobalCoeffs(glm::vec3 coeffs){
     glUniform3f(glGetUniformLocation(m_handle, "coeffs"), coeffs.x, coeffs.y, coeffs.z);
 }
 
-void Shader::setLights(std::vector<std::shared_ptr<Light>> lights, std::shared_ptr<Camera> camera){
+void Shader::setLights(std::vector<std::shared_ptr<Light>> lights){
     int numLights = std::min(int(lights.size()), 16);
     std::vector<int> lightType;
     std::vector<float> lightColor;
     std::vector<float> lightFunction;
-    std::vector<float> camSpace_lightPos;
-    std::vector<float> camSpace_lightDir;
+    std::vector<float> worldSpace_lightPos;
+    std::vector<float> worldSpace_lightDir;
     lightType.resize(numLights);
     lightColor.resize(numLights*3);
     lightFunction.resize(numLights*3);
-    camSpace_lightPos.resize(numLights*3);
-    camSpace_lightDir.resize(numLights*3);
+    worldSpace_lightPos.resize(numLights*3);
+    worldSpace_lightDir.resize(numLights*3);
     for(int i = 0; i<numLights; i++){
         lightColor[i*3] = lights[i]->getColor().r;
         lightColor[i*3+1] = lights[i]->getColor().g;
@@ -77,26 +77,31 @@ void Shader::setLights(std::vector<std::shared_ptr<Light>> lights, std::shared_p
                 lightFunction[i*3] = lights[i]->getAttenuation().x;
                 lightFunction[i*3+1] = lights[i]->getAttenuation().y;
                 lightFunction[i*3+2] = lights[i]->getAttenuation().z;
-                camLightData = glm::vec3(camera->getView()*glm::vec4(lights[i]->getPos(), 1));
-                camSpace_lightPos[i*3] = camLightData.x;
-                camSpace_lightPos[i*3+1] = camLightData.y;
-                camSpace_lightPos[i*3+2] = camLightData.z;
+                worldSpace_lightPos[i*3] = lights[i]->getPos().x;
+                worldSpace_lightPos[i*3+1] = lights[i]->getPos().y;
+                worldSpace_lightPos[i*3+2] = lights[i]->getPos().z;
                 break;
             case LightType::DIRECTIONAL:
                 lightType[i] = 1;
-                camLightData = glm::vec3(camera->getView()*glm::vec4(lights[i]->getDir(), 0));
-                camSpace_lightPos[i*3] = camLightData.x;
-                camSpace_lightPos[i*3+1] = camLightData.y;
-                camSpace_lightPos[i*3+2] = camLightData.z;
+                worldSpace_lightDir[i*3] = lights[i]->getDir().x;
+                worldSpace_lightDir[i*3+1] = lights[i]->getDir().y;
+                worldSpace_lightDir[i*3+2] = lights[i]->getDir().z;
                 break;
         }
     }
     glUniform1i(glGetUniformLocation(m_handle, "numLights"), numLights);
+    Debug::checkGLError();
     glUniform1iv(glGetUniformLocation(m_handle, "lightType"), numLights, lightType.data());
+    Debug::checkGLError();
     glUniform3fv(glGetUniformLocation(m_handle, "lightColor"), numLights, lightColor.data());
+    Debug::checkGLError();
     glUniform3fv(glGetUniformLocation(m_handle, "lightFunction"), numLights, lightFunction.data());
-    glUniform3fv(glGetUniformLocation(m_handle, "camSpace_lightPos"), numLights, camSpace_lightPos.data());
-    glUniform3fv(glGetUniformLocation(m_handle, "camSpace_lightDir"), numLights, camSpace_lightDir.data());
+    Debug::checkGLError();
+    glUniform3fv(glGetUniformLocation(m_handle, "worldSpace_lightPos"), numLights, worldSpace_lightPos.data());
+    Debug::checkGLError();
+    std::cout<<worldSpace_lightDir[0]<<std::endl;
+    glUniform3fv(glGetUniformLocation(m_handle, "worldSpace_lightDir"), numLights, worldSpace_lightDir.data());
+    Debug::checkGLError();
 }
 
 void Shader::clearLights(){

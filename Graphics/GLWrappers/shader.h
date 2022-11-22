@@ -18,7 +18,7 @@ public:
     void setCamera(std::shared_ptr<Camera> camera);
     void setModelTransform(std::shared_ptr<ModelTransform> modelTransform);
     void setGlobalCoeffs(glm::vec3 coeffs);
-    void setLights(std::vector<std::shared_ptr<Light>> lights, std::shared_ptr<Camera> camera);
+    void setLights(std::vector<std::shared_ptr<Light>> lights);
     void clearLights();
 
 private:

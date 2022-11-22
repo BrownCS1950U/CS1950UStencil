@@ -20,6 +20,7 @@ public:
     void resize(int width, int height);
     void translate(glm::vec3 move);
     void setPos(glm::vec3 newPos);
+    glm::vec3 getPos();
     void rotate(float angle, glm::vec3 axis);
     void setLook(glm::vec3 newLook);
 

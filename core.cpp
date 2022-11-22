@@ -26,11 +26,21 @@ Core::Core(){
     Global::graphics.getCamera()->translate(glm::vec3(0, 0, -2));
 
     m_perVertexMaterial = Global::graphics.addMaterial("per-vertex color");
+    Debug::checkGLError();
 
     m_grassMaterial = Global::graphics.addMaterial("grass", "Resources/Images/grass.png");
     Debug::checkGLError();
 
-    m_lights.push_back(std::make_shared<Light>(LightType::DIRECTIONAL, glm::vec3(0, 1, 0), glm::vec3(1, 0, 0)));
+    m_lights.push_back(std::make_shared<Light>(LightType::DIRECTIONAL, glm::vec3(0.1, 0.2, 1), glm::vec3(0.258824, 0.960784, 0.960784)));
+
+    Global::graphics.setLights(m_lights);
+    Debug::checkGLError();
+
+    Global::graphics.setCamera();
+    Debug::checkGLError();
+
+    Global::graphics.setGlobalData();
+    Debug::checkGLError();
 }
 
 Core::~Core(){
@@ -46,23 +56,10 @@ void Core::update(float seconds){
     Global::graphics.bindShader();
     Debug::checkGLError();
 
-    Global::graphics.clearLights();
-    Debug::checkGLError();
-
-    Global::graphics.setGlobalData();
-    Debug::checkGLError();
-
-    Global::graphics.setCamera();
-
     m_coneModelTransform->clear();
     m_coneModelTransform->rotate(glm::radians(m_angle), glm::vec3(0, 1, 1));
     Debug::checkGLError();
     Global::graphics.drawShape(m_cone, m_coneModelTransform, m_grassMaterial);
-    Debug::checkGLError();
-
-    m_triangleModelTransform->clear();
-    m_triangleModelTransform->rotate(glm::radians(2*m_angle), glm::vec3(0, 0, 1));
-    Global::graphics.drawShape(m_triangle, m_triangleModelTransform, m_perVertexMaterial);
     Debug::checkGLError();
 }
 
@@ -73,4 +70,7 @@ void Core::keyEvent(int key, int action){
 void Core::resizeEvent(int width, int height){
     glViewport(0, 0, width, height);
     Global::graphics.getCamera()->resize(width, height);
+
+    Global::graphics.setCamera();
+    Debug::checkGLError();
 }

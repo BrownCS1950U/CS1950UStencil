@@ -8,14 +8,14 @@ layout (location = 3) in vec3 color;
 
 uniform mat4 model, view, projection;
 
-out vec4 camSpace_pos;
-out vec4 camSpace_norm;
+out vec3 worldSpace_pos;
+out vec3 worldSpace_norm;
 out vec2 tex_coord;
 out vec3 vertColor;
 
 void main() {
-    camSpace_pos = view*model*vec4(pos, 1.0);
-    camSpace_norm = transpose(inverse(view*model))*vec4(norm, 0.0);
+    worldSpace_pos = vec3(view*model*vec4(pos, 1.0));
+    worldSpace_norm = vec3(transpose(inverse(model))*vec4(norm, 0.0));
     tex_coord = uv;
     vertColor = color;
 

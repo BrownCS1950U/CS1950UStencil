@@ -46,8 +46,6 @@ add_executable(${PROJECT_NAME}
     Graphics/shaderloader.h
     Graphics/GLWrappers/shader.h
     Graphics/GLWrappers/texture.h
-    Graphics/GLWrappers/renderbuffer.h
-    Graphics/GLWrappers/fbo.h
     Graphics/material.h
     Graphics/shapedata.h
     Graphics/shape.h
@@ -63,8 +61,6 @@ add_executable(${PROJECT_NAME}
     Graphics/camera.cpp
     Graphics/GLWrappers/shader.cpp
     Graphics/GLWrappers/texture.cpp
-    Graphics/GLWrappers/renderbuffer.cpp
-    Graphics/GLWrappers/fbo.cpp
     Graphics/material.cpp
     Graphics/shape.cpp
     Graphics/modeltransform.cpp

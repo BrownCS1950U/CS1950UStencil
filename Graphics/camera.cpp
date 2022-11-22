@@ -31,7 +31,7 @@ glm::mat4 Camera::getView(){
 void Camera::resize(int width, int height){
     m_width = width;
     m_height = height;
-    m_aspect = width/float(height);
+    m_aspect = float(width)/float(height);
 
     calculateProjection();
 }
@@ -46,6 +46,10 @@ void Camera::setPos(glm::vec3 newPos){
     m_pos = newPos;
 
     calculateView();
+}
+
+glm::vec3 Camera::getPos(){
+    return m_pos;
 }
 
 void Camera::rotate(float angle, glm::vec3 axis){

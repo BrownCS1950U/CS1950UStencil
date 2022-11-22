@@ -3,7 +3,7 @@
 
 Graphics::Graphics():
     m_camera(std::make_shared<Camera>()),
-    m_global_coeffs(glm::vec3(0.1))
+    m_global_coeffs(glm::vec3(0.25))
 {
 
 }
@@ -24,9 +24,8 @@ void Graphics::initialize(){
     addShape("cylinder", cylinderVertexBufferData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
     addShape("cone", coneVertexBufferData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
 
-    addShader("default", {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER}, {"Resources/Shaders/default.vert", "Resources/Shaders/default.frag"});
-    addShader("phong", {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER}, {"Resources/Shaders/phong.vert", "Resources/Shaders/phong.frag"});
-    addShader("fbo", {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER}, {"Resources/Shaders/fbo.vert", "Resources/Shaders/fbo.frag"});
+    addShader("default", {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER}, {"Resources/Shaders/phong.vert", "Resources/Shaders/phong.frag"});
+    bindShader("default");
     
     addMaterial("default", glm::vec3(1));
 }
@@ -117,7 +116,7 @@ void Graphics::setGlobalData(){
 }
 
 void Graphics::setLights(std::vector<std::shared_ptr<Light>> lights){
-    m_active_shader->setLights(lights, m_camera);
+    m_active_shader->setLights(lights);
 }
 
 void Graphics::clearLights(){
