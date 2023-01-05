@@ -19,6 +19,10 @@ void Graphics::initializeGLEW(){
 }
 
 void Graphics::initialize(){
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+
+    addShape("quad", quadVertexBufferData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
     addShape("cube", cubeVertexBufferData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
     addShape("sphere", sphereVertexBufferData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
     addShape("cylinder", cylinderVertexBufferData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
@@ -34,12 +38,8 @@ void Graphics::clearScreen(GLbitfield mask){
     glClear(mask);
 }
 
-std::shared_ptr<Camera> Graphics::getCamera(){
-    return m_camera;
-}
-
-void Graphics::setCamera(){
-    m_active_shader->setCamera(m_camera);
+void Graphics::setCameraData(std::shared_ptr<Camera> camera){
+    m_active_shader->setCamera(camera);
 }
 
 void Graphics::addShader(std::string shaderName, std::vector<GLenum> shaderTypes, std::vector<const char*> filepaths){
@@ -71,14 +71,13 @@ std::shared_ptr<Shape> Graphics::getShape(std::string shapeName){
 }
 
 void Graphics::drawShape(std::shared_ptr<Shape> myShape, std::shared_ptr<ModelTransform> modelTransform, std::shared_ptr<Material> material){
+    if(material == nullptr){
+        m_active_shader->setMaterial(getMaterial("default"));
+    }
+    else{
+        m_active_shader->setMaterial(material);
+    }
     m_active_shader->setModelTransform(modelTransform);
-    m_active_shader->setMaterial(material);
-    myShape->draw();
-}
-
-void Graphics::drawShape(std::shared_ptr<Shape> myShape, std::shared_ptr<ModelTransform> modelTransform){
-    m_active_shader->setModelTransform(modelTransform);
-    m_active_shader->setMaterial(getMaterial("default"));
     myShape->draw();
 }
 

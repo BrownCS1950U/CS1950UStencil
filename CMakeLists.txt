@@ -29,42 +29,43 @@ include_directories(${GLFW_SOURCE_DIR}/include
                     ${GLFW_SOURCE_DIR}/deps
                     ${GLEW_SOURCE_DIR}/include
                     ${STB_SOURCE_DIR}
-                    Graphics
+                    ${PROJECT_SOURCE_DIR}
                     )
 
 add_library(glew STATIC ${GLEW_SOURCE_DIR}/src/glew.c)
 
 add_executable(${PROJECT_NAME}
-    window.h
-    core.h
+    main.cpp
+
+    Engine/core.h
+    Engine/core.cpp
+    Engine/window.h
+    Engine/window.cpp
+
     Graphics/graphics.h
+    Graphics/graphics.cpp
     Graphics/global.h
     Graphics/debug.h
-    Graphics/GLWrappers/vbo.h
-    Graphics/GLWrappers/vao.h
     Graphics/camera.h
+    Graphics/camera.cpp
     Graphics/shaderloader.h
-    Graphics/GLWrappers/shader.h
-    Graphics/GLWrappers/texture.h
     Graphics/material.h
+    Graphics/material.cpp
     Graphics/shapedata.h
     Graphics/shape.h
-    Graphics/modeltransform.h
-    Graphics/light.h
-
-    main.cpp
-    window.cpp
-    core.cpp
-    Graphics/graphics.cpp
-    Graphics/GLWrappers/vbo.cpp
-    Graphics/GLWrappers/vao.cpp
-    Graphics/camera.cpp
-    Graphics/GLWrappers/shader.cpp
-    Graphics/GLWrappers/texture.cpp
-    Graphics/material.cpp
     Graphics/shape.cpp
+    Graphics/modeltransform.h
     Graphics/modeltransform.cpp
+    Graphics/light.h
     Graphics/light.cpp
+    Graphics/GLWrappers/shader.h
+    Graphics/GLWrappers/shader.cpp
+    Graphics/GLWrappers/texture.h
+    Graphics/GLWrappers/texture.cpp
+    Graphics/GLWrappers/vbo.h
+    Graphics/GLWrappers/vbo.cpp
+    Graphics/GLWrappers/vao.h
+    Graphics/GLWrappers/vao.cpp
 )
 
 find_package(OpenGL REQUIRED)

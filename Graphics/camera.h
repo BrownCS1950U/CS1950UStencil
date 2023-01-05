@@ -23,6 +23,8 @@ public:
     glm::vec3 getPos();
     void rotate(float angle, glm::vec3 axis);
     void setLook(glm::vec3 newLook);
+    glm::vec3 getLook();
+    glm::vec3 getUp();
 
 private:
     // Internal functions to update projection and view matrices

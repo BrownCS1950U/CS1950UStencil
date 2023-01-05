@@ -3,7 +3,16 @@
 #include "GL/glew.h"
 #include <vector>
 
-//Cube, Sphere, Cylinder, and Cone data with pos, norm, uvs
+//Quad, Cube, Sphere, Cylinder, and Cone data with pos, norm, uvs
+
+std::vector<GLfloat> quadVertexBufferData = {
+    -0.5f, 0,  0.5f, 0, 1, 0, 0, 0,
+     0.5f, 0,  0.5f, 0, 1, 0, 1, 0,
+     0.5f, 0, -0.5f, 0, 1, 0, 1, 1,
+    -0.5f, 0,  0.5f, 0, 1, 0, 0, 0,
+     0.5f, 0, -0.5f, 0, 1, 0, 1, 1,
+    -0.5f, 0, -0.5f, 0, 1, 0, 0, 1
+};
 
 std::vector<GLfloat> cubeVertexBufferData = {
     // front

@@ -46,22 +46,33 @@ void Window::start(){
 
     glfwSetKeyCallback(m_GLFWwindow, keyCallback);
 
+    glfwSetMouseButtonCallback(m_GLFWwindow, mouseButtonCallback);
+
+    // glfwSetInputMode(m_GLFWwindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    // if (glfwRawMouseMotionSupported()){
+    //     glfwSetInputMode(m_GLFWwindow, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+    // }
+
+    glfwSetCursorPosCallback(m_GLFWwindow, cursorPosCallback);
+
     glfwSetWindowSizeCallback(m_GLFWwindow, windowSizeCallback);
+
+    glfwSetFramebufferSizeCallback(m_GLFWwindow, framebufferSizeCallback);
 
     glfwSetInputMode(m_GLFWwindow, GLFW_STICKY_KEYS, GLFW_TRUE);
 }
 
 void Window::loop(){
+    double previous = glfwGetTime();
     while (!glfwWindowShouldClose(m_GLFWwindow))
     {
-        if(glfwGetTime() > 1.f/60){
-            m_core->update(glfwGetTime());
-            glfwSetTime(0);
-            glfwSwapBuffers(m_GLFWwindow);
-        }
-        // Keep running
-        //glfwSwapBuffers(m_GLFWwindow);
+        double current = glfwGetTime();
+        double elapsed = current - previous;
+        previous = current;
         glfwPollEvents();
+        m_core->update(elapsed);
+        m_core->draw(0);
+        glfwSwapBuffers(m_GLFWwindow);
     }
 }
 
@@ -76,7 +87,22 @@ void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, 
     ptr->keyEvent(key, action);
 }
 
+void Window::cursorPosCallback(GLFWwindow* window, double xpos, double ypos){
+    Core* ptr = (Core*)glfwGetWindowUserPointer(window);
+    ptr->mousePosEvent(xpos, ypos);
+}
+
+void Window::mouseButtonCallback(GLFWwindow* window, int button, int action, int mods){
+    Core* ptr = (Core*)glfwGetWindowUserPointer(window);
+    ptr->mouseButtonEvent(button, action);
+}
+
 void Window::windowSizeCallback(GLFWwindow* window, int width, int height){
     Core* ptr = (Core*)glfwGetWindowUserPointer(window);
-    ptr->resizeEvent(width, height);
+    ptr->windowResizeEvent(width, height);
+}
+
+void Window::framebufferSizeCallback(GLFWwindow* window, int width, int height){
+    Core* ptr = (Core*)glfwGetWindowUserPointer(window);
+    ptr->framebufferResizeEvent(width, height);
 }

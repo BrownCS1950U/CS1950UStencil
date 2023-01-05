@@ -21,8 +21,7 @@ public:
     void initialize();
     void clearScreen(GLbitfield mask);
 
-    std::shared_ptr<Camera> getCamera();
-    void setCamera();
+    void setCameraData(std::shared_ptr<Camera> camera);
 
     void addShader(std::string shaderName, std::vector<GLenum> shaderTypes, std::vector<const char*> filepaths);
     void removeShader(std::string shaderName);
@@ -32,8 +31,7 @@ public:
     std::shared_ptr<Shape> addShape(std::string shapeName, std::vector<float> data, VAOAttrib attribs);
     void removeShape(std::string shapeName);
     std::shared_ptr<Shape> getShape(std::string shapeName);
-    void drawShape(std::shared_ptr<Shape> myShape, std::shared_ptr<ModelTransform> modelTransform, std::shared_ptr<Material> material);
-    void drawShape(std::shared_ptr<Shape> myShape, std::shared_ptr<ModelTransform> modelTransform);
+    void drawShape(std::shared_ptr<Shape> myShape, std::shared_ptr<ModelTransform> modelTransform, std::shared_ptr<Material> material = nullptr);
     
     // Material-related methods
     std::shared_ptr<Material> addMaterial(std::string materialName, glm::vec3 color, float shininess = 1.f);

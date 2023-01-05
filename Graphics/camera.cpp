@@ -1,4 +1,5 @@
 #include "camera.h"
+#include <iostream>
 
 Camera::Camera(int width, int height, glm::vec3 pos, glm::vec3 look, 
     glm::vec3 up, float fov, float nearPlane, float farPlane):
@@ -62,6 +63,14 @@ void Camera::setLook(glm::vec3 newLook){
     m_look = newLook;
 
     calculateView();
+}
+
+glm::vec3 Camera::getLook(){
+    return m_look;
+}
+
+glm::vec3 Camera::getUp(){
+    return m_up;
 }
 
 void Camera::calculateProjection(){
