@@ -48,10 +48,10 @@ void Window::start(){
 
     glfwSetMouseButtonCallback(m_GLFWwindow, mouseButtonCallback);
 
-    // glfwSetInputMode(m_GLFWwindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    // if (glfwRawMouseMotionSupported()){
-    //     glfwSetInputMode(m_GLFWwindow, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
-    // }
+    glfwSetInputMode(m_GLFWwindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    if (glfwRawMouseMotionSupported()){
+        glfwSetInputMode(m_GLFWwindow, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+    }
 
     glfwSetCursorPosCallback(m_GLFWwindow, cursorPosCallback);
 

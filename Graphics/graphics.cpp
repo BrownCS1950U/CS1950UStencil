@@ -2,7 +2,6 @@
 #include "shapeData.h"
 
 Graphics::Graphics():
-    m_camera(std::make_shared<Camera>()),
     m_global_coeffs(glm::vec3(0.25))
 {
 
@@ -20,7 +19,7 @@ void Graphics::initializeGLEW(){
 
 void Graphics::initialize(){
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
+    //glEnable(GL_CULL_FACE);
 
     addShape("quad", quadVertexBufferData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
     addShape("cube", cubeVertexBufferData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);

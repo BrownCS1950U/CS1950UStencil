@@ -47,7 +47,6 @@ public:
     void initializeGLEW();
 
 private:
-    std::shared_ptr<Camera> m_camera;
     std::map<std::string, std::shared_ptr<Shader>> m_shaders;
     std::map<std::string, std::shared_ptr<Shape>> m_shapes;
     std::map<std::string, std::shared_ptr<Material>> m_materials;
