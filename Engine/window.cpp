@@ -66,12 +66,9 @@ void Window::loop(){
     double previous = glfwGetTime();
     while (!glfwWindowShouldClose(m_GLFWwindow))
     {
-        double current = glfwGetTime();
-        double elapsed = current - previous;
-        previous = current;
         glfwPollEvents();
-        m_core->update(elapsed);
-        m_core->draw(0);
+        m_core->update();
+        m_core->draw();
         glfwSwapBuffers(m_GLFWwindow);
     }
 }
@@ -83,6 +80,9 @@ void Window::end(){
 }
 
 void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods){
+    if(key == GLFW_KEY_ESCAPE){
+        glfwSetWindowShouldClose(window, true);
+    }
     Core* ptr = (Core*)glfwGetWindowUserPointer(window);
     ptr->keyEvent(key, action);
 }

@@ -9,8 +9,8 @@ class Core
 public:
     Core();
     ~Core();
-    void update(double seconds);
-    void draw(double timeSinceLastUpdate);
+    void update();
+    void draw();
     void keyEvent(int key, int action);
     void mousePosEvent(double xpos, double ypos);
     void mouseButtonEvent(int button, int action);
