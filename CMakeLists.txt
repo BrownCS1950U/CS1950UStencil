@@ -4,7 +4,6 @@ cmake_minimum_required(VERSION 3.14)
 #Sets project name to CS1950UEngine
 project(CS1950UEngine)
 
-find_package(GLEW REQUIRED CONFIG)
 find_package(OpenGL REQUIRED)
 
 #Tells compiler to use c++ 20
@@ -48,8 +47,6 @@ include_directories(${GLFW_SOURCE_DIR}/include
                     ${PROJECT_SOURCE_DIR}
                     )
 
-target_link_libraries(glfw StaticGLEW glm freetype)
-
 add_executable(${PROJECT_NAME}
     main.cpp
 
@@ -88,7 +85,7 @@ add_executable(${PROJECT_NAME}
     Graphics/GLWrappers/vao.cpp
 )
 
-find_package(OpenGL REQUIRED)
+target_link_libraries(${PROJECT_NAME} glfw StaticGLEW glm freetype)
 
 file( COPY ${CMAKE_CURRENT_SOURCE_DIR}/Resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR} )
 
@@ -102,6 +99,6 @@ endif()
 
 if (UNIX AND NOT APPLE)
   target_link_libraries(${PROJECT_NAME}
-      GLU
+      GL
   )
 endif()

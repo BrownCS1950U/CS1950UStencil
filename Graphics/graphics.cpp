@@ -1,5 +1,5 @@
 #include "graphics.h"
-#include "shapeData.h"
+#include "shapedata.h"
 
 Graphics::Graphics():
     m_textRenderer(std::make_shared<TextRenderer>())
@@ -39,7 +39,7 @@ void Graphics::initialize(){
     addMaterial("default", glm::vec3(1));
 
     std::cout<<"add font"<<std::endl;
-    addFont("opensans", "Resources/Fonts/opensans.ttf");
+    addFont("opensans", "Resources/Fonts/OpenSans.ttf");
     getFont("opensans");
 }
 
