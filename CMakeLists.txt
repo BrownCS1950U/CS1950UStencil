@@ -85,7 +85,7 @@ add_executable(${PROJECT_NAME}
     Graphics/GLWrappers/vao.cpp
 )
 
-target_link_libraries(${PROJECT_NAME} glfw StaticGLEW glm freetype)
+target_link_libraries(${PROJECT_NAME} glfw StaticGLEW glm freetype ${OPENGL_LIBRARIES})
 
 file( COPY ${CMAKE_CURRENT_SOURCE_DIR}/Resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR} )
 
