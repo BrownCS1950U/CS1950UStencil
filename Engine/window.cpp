@@ -103,6 +103,11 @@ void Window::mouseButtonCallback(GLFWwindow* window, int button, int action, int
     ptr->mouseButtonEvent(button, action);
 }
 
+void Window::scrollCallback(GLFWwindow* window, double xoffset, double yoffset){
+    Core* ptr = (Core*)glfwGetWindowUserPointer(window);
+    ptr->scrollEvent(yoffset);
+}
+
 void Window::windowSizeCallback(GLFWwindow* window, int width, int height){
     Core* ptr = (Core*)glfwGetWindowUserPointer(window);
     ptr->windowResizeEvent(width, height);

@@ -30,6 +30,10 @@ void Core::mouseButtonEvent(int button, int action){
 
 }
 
+void Core::scrollEvent(double distance){
+    
+}
+
 void Core::framebufferResizeEvent(int width, int height){
     Global::graphics.setFramebufferSize(glm::ivec2(width, height));
 }
