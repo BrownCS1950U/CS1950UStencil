@@ -14,6 +14,7 @@ set(GLFW_SOURCE_DIR "External/glfw-3.3.8")
 set(GLEW_SOURCE_DIR "External/glew")
 set(GLM_SOURCE_DIR "External/glm-master")
 set(STB_SOURCE_DIR "External/stb")
+set(FREETYPE_SOURCE_DIR "External/freetype")
 
 #GLFW settings
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "")
@@ -22,13 +23,22 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "")
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "")
 set(GLFW_INSTALL OFF CACHE BOOL "")
 
+#freetype settings
+set(FT_DISABLE_ZLIB TRUE)
+set(FT_DISABLE_BZIP2 TRUE)
+set(FT_DISABLE_PNG TRUE)
+set(FT_DISABLE_HARFBUZZ TRUE)
+set(FT_DISABLE_BROTLI TRUE)
+
 add_subdirectory(${GLFW_SOURCE_DIR})
 add_subdirectory(${GLM_SOURCE_DIR})
+add_subdirectory(${FREETYPE_SOURCE_DIR})
 
 include_directories(${GLFW_SOURCE_DIR}/include
                     ${GLFW_SOURCE_DIR}/deps
                     ${GLEW_SOURCE_DIR}/include
                     ${STB_SOURCE_DIR}
+                    ${FREETYPE_SOURCE_DIR}/include
                     ${PROJECT_SOURCE_DIR}
                     )
 
@@ -58,6 +68,10 @@ add_executable(${PROJECT_NAME}
     Graphics/modeltransform.cpp
     Graphics/light.h
     Graphics/light.cpp
+    Graphics/font.h
+    Graphics/font.cpp
+    Graphics/textrenderer.h
+    Graphics/textrenderer.cpp
     Graphics/GLWrappers/shader.h
     Graphics/GLWrappers/shader.cpp
     Graphics/GLWrappers/texture.h
@@ -71,7 +85,7 @@ add_executable(${PROJECT_NAME}
 find_package(OpenGL REQUIRED)
 
 
-target_link_libraries(${PROJECT_NAME} glfw glew glm)
+target_link_libraries(${PROJECT_NAME} glfw glew glm freetype)
 
 file( COPY ${CMAKE_CURRENT_SOURCE_DIR}/Resources DESTINATION ${CMAKE_CURRENT_BINARY_DIR} )
 

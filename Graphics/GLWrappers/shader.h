@@ -20,6 +20,7 @@ public:
     void setGlobalCoeffs(glm::vec3 coeffs);
     void setLights(std::vector<std::shared_ptr<Light>> lights);
     void clearLights();
+    void setTextUniforms(float screenWidth, float screenHeight, glm::vec3 color);
 
 private:
     GLuint m_handle;

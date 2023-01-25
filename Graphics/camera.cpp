@@ -54,12 +54,19 @@ glm::vec3 Camera::getPos(){
 }
 
 void Camera::rotate(float angle, glm::vec3 axis){
-    m_look = glm::vec3(glm::rotate(glm::mat4(1), angle, axis) * glm::vec4(m_look, 0));
-
-    calculateView();
+    glm::mat4 lookRotation = glm::rotate(glm::mat4(1), angle, axis);
+    glm::vec3 tempLook = glm::vec3(lookRotation * glm::vec4(m_look, 0));
+    if(glm::cross(tempLook, m_up) != glm::vec3(0)){
+        m_look = tempLook;
+       calculateView();
+    }
 }
 
 void Camera::setLook(glm::vec3 newLook){
+    if(glm::cross(newLook, m_up) == glm::vec3(0)){
+        std::cout<<"Error: Look vector cannot be parallel to up vector!"<<std::endl;
+        return;
+    }
     m_look = newLook;
 
     calculateView();
@@ -67,6 +74,16 @@ void Camera::setLook(glm::vec3 newLook){
 
 glm::vec3 Camera::getLook(){
     return m_look;
+}
+
+void Camera::setUp(glm::vec3 newUp){
+    if(glm::cross(newUp, m_look) == glm::vec3(0)){
+        std::cout<<"Error: Up vector cannot be parallel to look vector!"<<std::endl;
+        return;
+    }
+    m_up = newUp;
+
+    calculateView();
 }
 
 glm::vec3 Camera::getUp(){

@@ -107,3 +107,9 @@ void Shader::setLights(std::vector<std::shared_ptr<Light>> lights){
 void Shader::clearLights(){
     glUniform1i(glGetUniformLocation(m_handle, "numLights"), 0);
 }
+
+void Shader::setTextUniforms(float screenWidth, float screenHeight, glm::vec3 color){
+    glm::mat4 projection = glm::ortho(0.0f, screenWidth, 0.0f, screenHeight);
+    glUniformMatrix4fv(glGetUniformLocation(m_handle, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+    glUniform3f(glGetUniformLocation(m_handle, "textColor"), color.r, color.g, color.b);
+}

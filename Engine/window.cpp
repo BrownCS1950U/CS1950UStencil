@@ -34,6 +34,12 @@ void Window::start(){
     glfwMakeContextCurrent(m_GLFWwindow);
 
     Global::graphics.initializeGLEW(); // IMPORTANT: Can't make ANY OpenGL calls before this occurs!
+    Global::graphics.initialize();
+    int width, height;
+    glfwGetWindowSize(m_GLFWwindow, &width, &height);
+    Global::graphics.setWindowSize(glm::ivec2(width, height));
+    glfwGetFramebufferSize(m_GLFWwindow, &width, &height);
+    Global::graphics.setFramebufferSize(glm::ivec2(width, height));
 
     glfwSwapInterval(1);
 
@@ -48,10 +54,10 @@ void Window::start(){
 
     glfwSetMouseButtonCallback(m_GLFWwindow, mouseButtonCallback);
 
-    glfwSetInputMode(m_GLFWwindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    if (glfwRawMouseMotionSupported()){
-        glfwSetInputMode(m_GLFWwindow, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
-    }
+    // glfwSetInputMode(m_GLFWwindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    // if (glfwRawMouseMotionSupported()){
+    //     glfwSetInputMode(m_GLFWwindow, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+    // }
 
     glfwSetCursorPosCallback(m_GLFWwindow, cursorPosCallback);
 

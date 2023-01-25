@@ -11,6 +11,7 @@
 #include "shape.h"
 #include "modeltransform.h"
 #include "light.h"
+#include "textrenderer.h"
 
 class Graphics
 {
@@ -20,12 +21,13 @@ public:
 
     void initialize();
     void clearScreen(GLbitfield mask);
+    void setClearColor(glm::vec3 clearColor);
 
     void setCameraData(std::shared_ptr<Camera> camera);
 
     void addShader(std::string shaderName, std::vector<GLenum> shaderTypes, std::vector<const char*> filepaths);
     void removeShader(std::string shaderName);
-    void bindShader(std::string shaderName = "default");
+    void bindShader(std::string shaderName = "phong");
 
     // Shape-related methods
     std::shared_ptr<Shape> addShape(std::string shapeName, std::vector<float> data, VAOAttrib attribs);
@@ -40,17 +42,35 @@ public:
     void removeMaterial(std::string materialName);
     std::shared_ptr<Material> getMaterial(std::string materialName);
 
-    void setGlobalData();
+    // Text and Font-related methods
+    std::shared_ptr<Font> addFont(std::string fontName, std::string filepath);
+    void removeFont(std::string fontName);
+    std::shared_ptr<Font> getFont(std::string fontName);
+    void drawUIText(std::shared_ptr<Font> font, std::string text, glm::vec2 anchorPosition, AnchorPoint anchorPoint, float textBoxWidth, float fontSize, float lineSpacing, glm::vec3 textColor);
+
+    void setGlobalData(glm::vec3 globalCoeffs);
+
     void setLights(std::vector<std::shared_ptr<Light>> lights);
     void clearLights();
 
     void initializeGLEW();
 
+    void setWindowSize(glm::ivec2 windowSize);
+    glm::ivec2 getWindowSize();
+
+    void setFramebufferSize(glm::ivec2 framebufferSize);
+    glm::ivec2 getFramebufferSize();
+
 private:
+    glm::ivec2 m_windowSize;
+    glm::ivec2 m_framebufferSize;
+
+    std::shared_ptr<TextRenderer> m_textRenderer;
+
     std::map<std::string, std::shared_ptr<Shader>> m_shaders;
     std::map<std::string, std::shared_ptr<Shape>> m_shapes;
     std::map<std::string, std::shared_ptr<Material>> m_materials;
+    std::map<std::string, std::shared_ptr<Font>> m_fonts;
 
     std::shared_ptr<Shader> m_active_shader;
-    glm::vec3 m_global_coeffs;
 };

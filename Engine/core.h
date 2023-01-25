@@ -16,4 +16,6 @@ public:
     void mouseButtonEvent(int button, int action);
     void windowResizeEvent(int width, int height);
     void framebufferResizeEvent(int width, int height);
+private:
+    std::shared_ptr<Shape> m_cone;
 };

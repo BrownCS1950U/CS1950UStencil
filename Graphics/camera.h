@@ -24,6 +24,7 @@ public:
     void rotate(float angle, glm::vec3 axis);
     void setLook(glm::vec3 newLook);
     glm::vec3 getLook();
+    void setUp(glm::vec3 newUp);
     glm::vec3 getUp();
 
 private:

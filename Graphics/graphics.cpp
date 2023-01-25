@@ -2,7 +2,7 @@
 #include "shapeData.h"
 
 Graphics::Graphics():
-    m_global_coeffs(glm::vec3(0.25))
+    m_textRenderer(std::make_shared<TextRenderer>())
 {
 
 }
@@ -14,27 +14,41 @@ Graphics::~Graphics(){
 void Graphics::initializeGLEW(){
     glewExperimental = GL_TRUE;
     std::cout<<"GLEWInit status: "<<glewInit()<<std::endl;
-    initialize();
 }
 
 void Graphics::initialize(){
     glEnable(GL_DEPTH_TEST);
-    //glEnable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
 
+    std::cout<<"initialize text renderer"<<std::endl;
+    m_textRenderer->initialize();
+
+    std::cout<<"add shapes"<<std::endl;
     addShape("quad", quadVertexBufferData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
     addShape("cube", cubeVertexBufferData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
     addShape("sphere", sphereVertexBufferData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
     addShape("cylinder", cylinderVertexBufferData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
     addShape("cone", coneVertexBufferData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
 
-    addShader("default", {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER}, {"Resources/Shaders/phong.vert", "Resources/Shaders/phong.frag"});
-    bindShader("default");
+    addShader("phong", {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER}, {"Resources/Shaders/phong.vert", "Resources/Shaders/phong.frag"});
+    addShader("text", {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER}, {"Resources/Shaders/text.vert", "Resources/Shaders/text.frag"});
+    bindShader("phong");
     
     addMaterial("default", glm::vec3(1));
+
+    std::cout<<"add font"<<std::endl;
+    addFont("opensans", "Resources/Fonts/opensans.ttf");
+    getFont("opensans");
 }
 
 void Graphics::clearScreen(GLbitfield mask){
     glClear(mask);
+}
+
+void GraphicssetClearColor(glm::vec3 clearColor){
+    glClearColor(clearColor.r, clearColor.g, clearColor.b, 1);
 }
 
 void Graphics::setCameraData(std::shared_ptr<Camera> camera){
@@ -46,7 +60,7 @@ void Graphics::addShader(std::string shaderName, std::vector<GLenum> shaderTypes
 }
 
 void Graphics::removeShader(std::string shaderName){
-    if(shaderName != "default"){
+    if(shaderName != "phong" && shaderName != "text"){
         m_shaders.erase(shaderName);
     }
 }
@@ -109,8 +123,27 @@ std::shared_ptr<Material> Graphics::getMaterial(std::string materialName){
     return m_materials.at(materialName);
 }
 
-void Graphics::setGlobalData(){
-    m_active_shader->setGlobalCoeffs(m_global_coeffs);
+std::shared_ptr<Font> Graphics::addFont(std::string fontName, std::string filepath){
+    std::shared_ptr<Font> newFont = std::make_shared<Font>(filepath);
+    m_fonts.insert({fontName, newFont});
+    return m_fonts.at(fontName);
+}
+
+void Graphics::removeFont(std::string fontName){
+    m_fonts.erase(fontName);
+}
+
+std::shared_ptr<Font> Graphics::getFont(std::string fontName){
+    return m_fonts.at(fontName);
+}
+
+void Graphics::drawUIText(std::shared_ptr<Font> font, std::string text, glm::vec2 anchorPosition, AnchorPoint anchorPoint, float textBoxWidth, float fontSize, float lineSpacing, glm::vec3 textColor){
+    m_active_shader->setTextUniforms(m_windowSize.x, m_windowSize.y, textColor);
+    m_textRenderer->renderUIText(font, text, anchorPosition, anchorPoint, textBoxWidth, fontSize, lineSpacing, textColor);
+}
+
+void Graphics::setGlobalData(glm::vec3 globalCoeffs){
+    m_active_shader->setGlobalCoeffs(globalCoeffs);
 }
 
 void Graphics::setLights(std::vector<std::shared_ptr<Light>> lights){
@@ -119,4 +152,21 @@ void Graphics::setLights(std::vector<std::shared_ptr<Light>> lights){
 
 void Graphics::clearLights(){
     m_active_shader->clearLights();
+}
+
+void Graphics::setWindowSize(glm::ivec2 windowSize){
+    m_windowSize = windowSize;
+}
+
+glm::ivec2 Graphics::getWindowSize(){
+    return m_windowSize;
+}
+
+void Graphics::setFramebufferSize(glm::ivec2 framebufferSize){
+    m_framebufferSize = framebufferSize;
+    glViewport(0, 0, m_framebufferSize.x, m_framebufferSize.y);
+}
+
+glm::ivec2 Graphics::getFramebufferSize(){
+    return m_framebufferSize;
 }
