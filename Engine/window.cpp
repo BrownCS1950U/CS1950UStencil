@@ -61,6 +61,8 @@ void Window::start(){
 
     glfwSetCursorPosCallback(m_GLFWwindow, cursorPosCallback);
 
+    glfwSetScrollCallback(m_GLFWwindow, scrollCallback);
+
     glfwSetWindowSizeCallback(m_GLFWwindow, windowSizeCallback);
 
     glfwSetFramebufferSizeCallback(m_GLFWwindow, framebufferSizeCallback);
