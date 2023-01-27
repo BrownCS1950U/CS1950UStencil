@@ -1,7 +1,7 @@
 #include "core.h"
 
 Core::Core(){
-    m_cone = Global::graphics.getShape("cone");
+
 }
 
 Core::~Core(){
