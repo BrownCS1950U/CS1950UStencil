@@ -17,9 +17,4 @@ public:
     void scrollEvent(double distance);
     void windowResizeEvent(int width, int height);
     void framebufferResizeEvent(int width, int height);
-
-private:
-    std::shared_ptr<Camera> m_camera;
-    std::shared_ptr<ModelTransform> m_trans;
-    std::shared_ptr<Shape> m_test;
 };
