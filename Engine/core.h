@@ -19,5 +19,7 @@ public:
     void framebufferResizeEvent(int width, int height);
 
 private:
-    std::vector<std::shared_ptr<Light>> m_lights;
+    std::shared_ptr<Camera> m_camera;
+    std::shared_ptr<ModelTransform> m_trans;
+    std::shared_ptr<Shape> m_test;
 };
