@@ -70,6 +70,8 @@ void Window::start(){
     glfwSetFramebufferSizeCallback(m_GLFWwindow, framebufferSizeCallback);
 
     glfwSetInputMode(m_GLFWwindow, GLFW_STICKY_KEYS, GLFW_TRUE);
+    
+    glfwFocusWindow(m_GLFWwindow);
 }
 
 void Window::loop(){

@@ -33,7 +33,7 @@ Texture::Texture(std::string filepath, GLenum texUnit, GLint internalFormat, GLe
     glTexParameteri(m_texTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     stbi_set_flip_vertically_on_load(1);
     int width, height, numChannels;
-    unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &numChannels, 4);
+    unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &numChannels, 0);
     if (stbi_failure_reason()){
         std::cout << stbi_failure_reason() << std::endl;
     }

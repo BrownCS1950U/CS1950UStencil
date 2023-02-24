@@ -1,7 +1,8 @@
 #include "core.h"
 
 Core::Core(){
-
+    m_lights.push_back(std::make_shared<Light>(LightType::DIRECTIONAL, glm::vec3(1)));
+    Global::graphics.setLights(m_lights);
 }
 
 Core::~Core(){
@@ -19,7 +20,7 @@ void Core::draw(){
 }
 
 void Core::keyEvent(int key, int action){
-    
+
 }
 
 void Core::mousePosEvent(double xpos, double ypos){

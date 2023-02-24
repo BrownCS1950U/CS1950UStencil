@@ -75,6 +75,7 @@ add_executable(${PROJECT_NAME}
     Graphics/font.cpp
     Graphics/textrenderer.h
     Graphics/textrenderer.cpp
+    Graphics/tiny_obj_loader.h
     Graphics/GLWrappers/shader.h
     Graphics/GLWrappers/shader.cpp
     Graphics/GLWrappers/texture.h
@@ -83,6 +84,7 @@ add_executable(${PROJECT_NAME}
     Graphics/GLWrappers/vbo.cpp
     Graphics/GLWrappers/vao.h
     Graphics/GLWrappers/vao.cpp
+
 )
 
 target_link_libraries(${PROJECT_NAME} glfw StaticGLEW glm freetype ${OPENGL_LIBRARIES})

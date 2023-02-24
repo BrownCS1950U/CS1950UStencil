@@ -17,4 +17,7 @@ public:
     void scrollEvent(double distance);
     void windowResizeEvent(int width, int height);
     void framebufferResizeEvent(int width, int height);
+
+private:
+    std::vector<std::shared_ptr<Light>> m_lights;
 };
