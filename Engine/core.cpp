@@ -1,7 +1,7 @@
 #include "core.h"
 
 Core::Core(){
-
+    Global::graphics.addShape("test", "Resources/Meshes/ceiling.obj");
 }
 
 Core::~Core(){

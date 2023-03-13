@@ -87,9 +87,18 @@ std::vector<glm::vec3> Graphics::addShape(std::string shapeName, std::string fil
         throw std::runtime_error(warn + err);
     }
 
-    std::vector<float> drawData;
-    std::vector<glm::vec3> collisionData;
+    int numTriangles = 0;
+    for(size_t s = 0; s < shapes.size(); s++){
+        numTriangles += shapes[s].mesh.num_face_vertices.size();
+    }
 
+    std::vector<float> drawData;
+    drawData.reserve(numTriangles * 3 * 8);
+    std::vector<glm::vec3> collisionData;
+    collisionData.reserve(numTriangles * 3);
+
+    int i = 0;
+    int j = 0;
     for(size_t s = 0; s < shapes.size(); s++) {
         size_t index_offset = 0;
         for(size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
@@ -99,19 +108,21 @@ std::vector<glm::vec3> Graphics::addShape(std::string shapeName, std::string fil
                 tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
 
                 // Add position
-                drawData.push_back(attrib.vertices[3*idx.vertex_index]);
-                drawData.push_back(attrib.vertices[3*idx.vertex_index + 1]);
-                drawData.push_back(attrib.vertices[3*idx.vertex_index + 2]);
+                drawData[i] = attrib.vertices[3*idx.vertex_index];
+                drawData[i + 1] = attrib.vertices[3*idx.vertex_index + 1];
+                drawData[i + 2] = attrib.vertices[3*idx.vertex_index + 2];
                 // Add normal
-                drawData.push_back(attrib.normals[3*idx.normal_index]);
-                drawData.push_back(attrib.normals[3*idx.normal_index + 1]);
-                drawData.push_back(attrib.normals[3*idx.normal_index + 2]);
+                drawData[i + 3] = attrib.normals[3*idx.normal_index];
+                drawData[i + 4] = attrib.normals[3*idx.normal_index + 1];
+                drawData[i + 5] = attrib.normals[3*idx.normal_index + 2];
                 // Add uv
-                drawData.push_back(attrib.texcoords[2*idx.texcoord_index]);
-                drawData.push_back(attrib.texcoords[2*idx.texcoord_index + 1]);
+                drawData[i + 6] = attrib.texcoords[2*idx.texcoord_index];
+                drawData[i + 7] = attrib.texcoords[2*idx.texcoord_index + 1];
 
                 // Add collision position data
-                collisionData.push_back(glm::vec3(attrib.vertices[3*idx.vertex_index], attrib.vertices[3*idx.vertex_index + 1], attrib.vertices[3*idx.vertex_index + 2]));
+                collisionData[j] = glm::vec3(attrib.vertices[3*idx.vertex_index], attrib.vertices[3*idx.vertex_index + 1], attrib.vertices[3*idx.vertex_index + 2]);
+                i += 8;
+                j += 1;
             }
 
             index_offset += fv;
