@@ -1,24 +1,29 @@
 #include "window.h"
 
 Window::Window(){
-    std::cout<<"Start"<<std::endl;
-    start();
-    std::cout<<"Loop"<<std::endl;
-    loop();
-    std::cout<<"End"<<std::endl;
-    end();
+
 }
 
 Window::~Window(){
-
+    std::cout<<"Window destructor"<<std::endl;
+    if(m_coreAllocated){
+        delete(m_core);
+    }
+    if(m_windowAllocated){
+        glfwDestroyWindow(m_GLFWwindow);
+    }
+    if(m_glfwInitialized){
+        glfwTerminate();
+    }
 }
 
-void Window::start(){
+int Window::start(){
     // Testing glfw
     if(!glfwInit()){
         std::cout<<"GLFW init failed :("<<std::endl;
-        exit(EXIT_FAILURE);
+        return -1;
     }
+    m_glfwInitialized = true;
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
@@ -30,8 +35,9 @@ void Window::start(){
     {
         std::cout<<"Window Creation Failed :("<<std::endl;
         glfwTerminate();
-        exit(EXIT_FAILURE);
+        return -1;
     }
+    m_windowAllocated = true;
 
     glfwMakeContextCurrent(m_GLFWwindow);
 
@@ -47,6 +53,10 @@ void Window::start(){
 
     // Set up core now that windowing and opengl are set up
     m_core = new Core();
+    if(!m_core){
+        return -1;
+    }
+    m_coreAllocated = true;
 
     // Stores variable in glfw to reference our m_core object. This allows it to be accessed
     // even in static methods such as keyCallback and windowSizeCallback
@@ -72,9 +82,11 @@ void Window::start(){
     glfwSetInputMode(m_GLFWwindow, GLFW_STICKY_KEYS, GLFW_TRUE);
     
     glfwFocusWindow(m_GLFWwindow);
+
+    return 0;
 }
 
-void Window::loop(){
+int Window::loop(){
     double previous = glfwGetTime();
     while (!glfwWindowShouldClose(m_GLFWwindow))
     {
@@ -83,12 +95,8 @@ void Window::loop(){
         m_core->draw();
         glfwSwapBuffers(m_GLFWwindow);
     }
-}
 
-void Window::end(){
-    glfwDestroyWindow(m_GLFWwindow);
-    glfwTerminate();
-    exit(EXIT_SUCCESS);
+    return 0;
 }
 
 void Window::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods){
