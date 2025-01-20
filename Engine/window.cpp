@@ -30,7 +30,7 @@ int Window::start(){
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 
-    m_GLFWwindow = glfwCreateWindow(640, 480, "CS1950U Engine", NULL, NULL);
+    m_GLFWwindow = glfwCreateWindow(640, 480, "CS1950U Engine", nullptr, nullptr);
     if (!m_GLFWwindow)
     {
         std::cout<<"Window Creation Failed :("<<std::endl;
@@ -90,10 +90,12 @@ int Window::loop(){
     double previous = glfwGetTime();
     while (!glfwWindowShouldClose(m_GLFWwindow))
     {
+        double current = glfwGetTime();
         glfwPollEvents();
-        m_core->update();
+        m_core->update(current - previous);
         m_core->draw();
         glfwSwapBuffers(m_GLFWwindow);
+        previous = current;
     }
 
     return 0;

@@ -17,7 +17,7 @@ Texture::Texture(int width, int height, GLenum texUnit, GLint internalFormat, GL
     glTexParameteri(m_texTarget, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(m_texTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(m_texTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexImage2D(m_texTarget, 0, internalFormat, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(m_texTarget, 0, internalFormat, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
     unbind();
 }
 
@@ -33,9 +33,10 @@ Texture::Texture(std::string filepath, GLenum texUnit, GLint internalFormat, GLe
     glTexParameteri(m_texTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     stbi_set_flip_vertically_on_load(1);
     int width, height, numChannels;
-    unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &numChannels, 0);
-    if (stbi_failure_reason()){
-        std::cout << stbi_failure_reason() << std::endl;
+    unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &numChannels, STBI_rgb_alpha);
+    if (!data){
+        std::cerr << "Failed to load texture at: " << filepath << "\nReason: " << stbi_failure_reason() << std::endl;
+
     }
     glTexImage2D(m_texTarget, 0, internalFormat, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
     stbi_image_free(data);

@@ -1,35 +1,38 @@
 #version 330 core
-// Uniforms for shape information
+
+// Input Attributes from Vertex Shader
 in vec3 worldSpace_pos;
 in vec3 worldSpace_norm;
 in vec2 tex_coord;
+in vec4 vertColor;
 
 // Object Material Data
 uniform int colorSource; // 0 = solid color (objColor), 1 = texture color (objTexture), 2 = per-vertex color (vertColor)
-uniform vec3 objColor;
+uniform vec4 objColor;
 uniform sampler2D objTexture;
-in vec3 vertColor;
 uniform float shininess;
 
-// Camera uniform
+// Camera Uniform
 uniform vec3 worldSpace_camPos;
 
-// Global Data
+// Global Lighting Coefficients
 uniform vec3 coeffs; // vec3(ka, kd, ks)
 
 // Light Data
 uniform int lightType[16]; // 0 = point light, 1 = directional light
 uniform vec3 lightColor[16];
-uniform vec3 lightFunction[16]; // Attenuation coefficients
-uniform vec3 worldSpace_lightPos[16]; //Light Positions
-uniform vec3 worldSpace_lightDir[16]; //Light Directions
-uniform int numLights; // Max number of lights = 8
+uniform vec3 lightFunction[16]; // Attenuation coefficients (for point lights)
+uniform vec3 worldSpace_lightPos[16]; // Light Positions (for point lights)
+uniform vec3 worldSpace_lightDir[16]; // Light Directions (for directional lights)
+uniform int numLights; // Number of active lights (Max = 16)
 
+// Output Fragment Color
 out vec4 fragColor;
 
+// Function to get the direction to the light based on its type
 vec3 getToLight(int lightIndex) {
-    int LIGHT_POINT = 0;
-    int LIGHT_DIRECTIONAL = 1;
+    const int LIGHT_POINT = 0;
+    const int LIGHT_DIRECTIONAL = 1;
 
     if (lightType[lightIndex] == LIGHT_POINT) {
         return normalize(worldSpace_lightPos[lightIndex] - worldSpace_pos);
@@ -38,84 +41,96 @@ vec3 getToLight(int lightIndex) {
         return normalize(-worldSpace_lightDir[lightIndex]);
     }
 
+    // Default direction if light type is undefined
     return vec3(0);
 }
 
+// Function to calculate attenuation for point lights
 float attenuationFactor(int lightIndex) {
-    int LIGHT_POINT = 0;
+    const int LIGHT_POINT = 0;
 
     if (lightType[lightIndex] == LIGHT_POINT) {
-        vec3 coeffs = lightFunction[lightIndex];
-        float d = length(worldSpace_lightPos[lightIndex] - worldSpace_pos);
-        return 1.0 / (coeffs.x + coeffs.y * d + coeffs.z * d * d);
+        vec3 attenuation = lightFunction[lightIndex];
+        float distance = length(worldSpace_lightPos[lightIndex] - worldSpace_pos);
+        return 1.0 / (attenuation.x + attenuation.y * distance + attenuation.z * distance * distance);
     }
 
-    return 1;
+    // No attenuation for directional lights
+    return 1.0;
 }
 
+// Function to compute diffuse intensity
 float computeDiffuseIntensity(vec3 worldSpace_toLight) {
-    // Dot product to get diffuse intensity
-    return max(dot(worldSpace_toLight, normalize(worldSpace_norm)), 0);
+    return max(dot(worldSpace_toLight, normalize(worldSpace_norm)), 0.0);
 }
 
+// Corrected Function to compute specular intensity
 float computeSpecularIntensity(vec3 worldSpace_toLight, vec3 worldSpace_toEye) {
-    // Guard against pow weirdness when exponent is 0
-    if (shininess == 0) {
-        return 0;
+    // Guard against pow(0, shininess) which is undefined
+    if (shininess <= 0.0) {
+        return 0.0;
     }
 
-    //reflect toLight
+    // Calculate the reflection direction of the light
     vec3 worldSpace_toLightReflected = reflect(-worldSpace_toLight, normalize(worldSpace_norm));
 
-    //Compute specular intensity using toEye, reflected light, and shininess
-    return pow(max(dot(worldSpace_toLightReflected, worldSpace_toEye), 0), shininess);
+    // Compute the dot product between the reflected light direction and the view direction
+    float specAngle = max(dot(normalize(worldSpace_toEye), normalize(worldSpace_toLightReflected)), 0.0);
+
+    // Calculate the specular intensity using the shininess exponent
+    return pow(specAngle, shininess);
 }
 
 void main() {
-    // Declare ambient, diffuse, and specular terms
-    vec3 ambi = vec3(coeffs.x);
-    vec3 diff = vec3(0.0);
-    vec3 spec = vec3(0.0);
+    // Initialize ambient, diffuse, and specular components
+    vec3 ambient = vec3(coeffs.x); // ka
+    vec3 diffuse = vec3(0.0);
+    vec3 specular = vec3(0.0);
 
-
-    // Compute worldSpace_toEye Vector for specular intensity computation;
+    // Compute the view direction vector
     vec3 worldSpace_toEye = normalize(worldSpace_camPos - worldSpace_pos);
 
-
-    // Compute per-light diffuse and specular contribution
-    for(int i = 0; i<numLights; i+= 1){
-
-        // get direction vector to light based on light type
+    // Iterate over each light to accumulate diffuse and specular contributions
+    for(int i = 0; i < numLights; i++) {
+        // Get the direction vector to the current light
         vec3 worldSpace_toLight = getToLight(i);
 
+        // Calculate diffuse and specular intensities
         float diffuse_intensity = computeDiffuseIntensity(worldSpace_toLight);
         float specular_intensity = computeSpecularIntensity(worldSpace_toLight, worldSpace_toEye);
 
+        // Calculate attenuation
         float att = attenuationFactor(i);
 
-
-        diff = diff + diffuse_intensity * lightColor[i] * att;
-        spec = spec + specular_intensity * lightColor[i] * att;
+        // Accumulate the diffuse and specular components
+        diffuse += diffuse_intensity * lightColor[i] * att;
+        specular += specular_intensity * lightColor[i] * att;
     }
 
-    // Apply global coefficients and object color to the diffuse and specular components
-    diff = diff * vec3(coeffs.y);
-    spec = spec * vec3(coeffs.z);
+    // Apply the global lighting coefficients
+    diffuse *= coeffs.y;  // kd
+    specular *= coeffs.z; // ks
 
-    // Color generated only from light intensities and colors
-    vec3 tempColor = clamp(ambi + diff + spec, 0, 1);
+    // Combine the ambient, diffuse, and specular components and clamp the result
+    vec3 lighting = clamp(ambient + diffuse + specular, 0.0, 1.0);
+    vec4 tempColor = vec4(lighting, 1.0);
 
-    // Apply correct object color
-    if (colorSource == 0 ) {
-        fragColor = vec4(tempColor * objColor, 1.0);
-    } 
+    // Apply the appropriate object color based on the colorSource uniform
+    if (colorSource == 0) {
+        // Solid color
+        fragColor = vec4(tempColor.rgb * objColor.rgb, tempColor.a * objColor.a);
+    }
     else if (colorSource == 1){
-        fragColor = vec4(tempColor * vec3(texture(objTexture, tex_coord)), 1.0);
+        // Texture color
+        vec4 texColor = texture(objTexture, tex_coord);
+        fragColor = vec4(tempColor.rgb * texColor.rgb, tempColor.a * texColor.a);
     }
     else if (colorSource == 2) {
-        fragColor = vec4(tempColor * vertColor, 1.0);
+        // Per-vertex color
+        fragColor = vec4(tempColor.rgb * vertColor.rgb, tempColor.a * vertColor.a);
     }
     else{
-        fragColor = vec4(tempColor, 1.0);
+        // Fallback to lighting only if colorSource is undefined
+        fragColor = vec4(lighting, 1.0);
     }
 }

@@ -10,9 +10,11 @@ enum class VAOAttrib{
     COLOR = 8
 };
 
-inline VAOAttrib operator|(VAOAttrib lhs, VAOAttrib rhs){
-    using VAOAttribType = std::underlying_type<VAOAttrib>::type;
-    return VAOAttrib(static_cast<VAOAttribType>(lhs) | static_cast<VAOAttribType>(rhs));
+inline VAOAttrib operator|(VAOAttrib a, VAOAttrib b) {
+    return static_cast<VAOAttrib>(
+            static_cast<std::underlying_type_t<VAOAttrib>>(a) |
+            static_cast<std::underlying_type_t<VAOAttrib>>(b)
+    );
 }
 
 inline bool operator&(VAOAttrib lhs, VAOAttrib rhs){

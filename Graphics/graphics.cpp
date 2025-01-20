@@ -1,8 +1,16 @@
 #include "graphics.h"
 #include "shapedata.h"
+#include "shapes/Cylinder.h"
+#include "shapes/Sphere.h"
+#include "shapes/Cone.h"
+#include "shapes/Cube.h"
+#include "Graphics/shapes/Quad.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
+
+
+#define PRINT(x) std::cout << x << "\n"
 
 Graphics::Graphics():
     m_textRenderer(std::make_shared<TextRenderer>())
@@ -29,12 +37,12 @@ void Graphics::initialize(){
     m_textRenderer->initialize();
 
     std::cout<<"add shapes"<<std::endl;
-    addShape("quad", quadVertexBufferData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
-    addShape("cube", cubeVertexBufferData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
-    addShape("sphere", sphereVertexBufferData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
-    addShape("cylinder", cylinderVertexBufferData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
-    addShape("cone", coneVertexBufferData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
-
+//    addShape("quad", quadVertexBufferData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
+//    addShape("cube", cubeVertexBufferData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
+//    addShape("sphere", sphereVertexBufferData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
+//    addShape("cylinder", cylinderVertexBufferData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
+//    addShape("cone", coneVertexBufferData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
+    initShapes();
     addShader("phong", {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER}, {"Resources/Shaders/phong.vert", "Resources/Shaders/phong.frag"});
     addShader("text", {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER}, {"Resources/Shaders/text.vert", "Resources/Shaders/text.frag"});
     bindShader("phong");
@@ -45,6 +53,33 @@ void Graphics::initialize(){
     addFont("opensans", "Resources/Fonts/OpenSans.ttf");
     getFont("opensans");
 }
+
+void Graphics::initShapes() {
+    Cylinder cyl = Cylinder();
+    Sphere sphere = Sphere();
+    Cube cube = Cube();
+    Cone cone = Cone();
+    Quad quad = Quad();
+
+    uint32_t quality = 8;
+    std::vector<float> cylData = cyl.updateParams(1, quality);
+    std::vector<float> sphereData = sphere.updateParams(quality, quality);
+    std::vector<float> cubeData = cube.updateParams(1, 1);
+    std::vector<float> coneData = cone.updateParams(1, quality);
+    std::vector<float> quadData = quad.updateParams(1, 1);
+
+    n_shapes[CYLINDER] = cyl.getVertexData();
+    n_shapes[SPHERE] = sphere.getVertexData();
+    n_shapes[CUBE] = cube.getVertexData();
+    n_shapes[CONE] = cone.getVertexData();
+    n_shapes[QUAD] = quad.getVertexData();
+    addShape("cylinder", cylData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
+    addShape("sphere", sphereData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
+    addShape("cube", cubeData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
+    addShape("cone", coneData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
+    addShape("quad", quadData, VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV);
+}
+
 
 void Graphics::clearScreen(GLbitfield mask){
     glClear(mask);
@@ -71,6 +106,110 @@ void Graphics::removeShader(std::string shaderName){
 void Graphics::bindShader(std::string shaderName){
     m_shaders.at(shaderName)->bind();
     m_active_shader = m_shaders.at(shaderName);
+}
+
+void Graphics::addObj(std::string shapeName, std::string filepath, bool hasUV){
+    tinyobj::attrib_t attrib;
+    std::vector<tinyobj::shape_t> shapes;
+    std::vector<tinyobj::material_t> materials;
+    std::string warn, err;
+    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filepath.c_str());
+
+    if (!warn.empty()) {
+        std::cout << "WARN: " << warn << std::endl;
+    }
+
+    if (!err.empty()) {
+        std::cerr << "ERR: " << err << std::endl;
+    }
+
+    if (!ret) {
+        std::cerr << "Failed to load/parse .obj file: " << filepath << std::endl;
+        return;
+    }
+
+    for (size_t s = 0; s < shapes.size(); s++) {
+        size_t index_offset = 0;
+        std::string meshName = shapes[s].name.empty() ? shapeName + "_mesh_" + std::to_string(s) : shapeName + "_" + shapes[s].name;
+
+        std::vector<float> drawData;
+        std::vector<glm::vec3> collisionData;
+
+        size_t numTriangles = shapes[s].mesh.num_face_vertices.size();
+        drawData.reserve(numTriangles * 3 * 8);
+        collisionData.reserve(numTriangles * 3);
+
+        for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
+            size_t fv = shapes[s].mesh.num_face_vertices[f];
+            if (fv != 3) {
+                std::cerr << "Non-triangular face found. Skipping." << std::endl;
+                index_offset += fv;
+                continue;
+            }
+
+            for (size_t v = 0; v < fv; v++) {
+                tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
+
+                float vx = attrib.vertices[3 * idx.vertex_index + 0];
+                float vy = attrib.vertices[3 * idx.vertex_index + 1];
+                float vz = attrib.vertices[3 * idx.vertex_index + 2];
+                drawData.push_back(vx);
+                drawData.push_back(vy);
+                drawData.push_back(vz);
+                collisionData.emplace_back(glm::vec3(vx, vy, vz));
+
+                if (idx.normal_index >= 0) {
+                    float nx = attrib.normals[3 * idx.normal_index + 0];
+                    float ny = attrib.normals[3 * idx.normal_index + 1];
+                    float nz = attrib.normals[3 * idx.normal_index + 2];
+                    drawData.push_back(nx);
+                    drawData.push_back(ny);
+                    drawData.push_back(nz);
+                } else {
+                    drawData.push_back(0.0f);
+                    drawData.push_back(0.0f);
+                    drawData.push_back(0.0f);
+                }
+
+                if (hasUV && idx.texcoord_index >= 0) {
+                    float tx = attrib.texcoords[2 * idx.texcoord_index + 0];
+                    float ty = attrib.texcoords[2 * idx.texcoord_index + 1];
+                    drawData.push_back(tx);
+                    drawData.push_back(ty);
+                } else {
+                    drawData.push_back(0.0f);
+                    drawData.push_back(0.0f);
+                }
+            }
+            index_offset += fv;
+        }
+
+        m_shapes.insert({
+                                meshName,
+                                std::make_shared<Shape>(
+                                        std::make_shared<VAO>(
+                                                std::make_shared<VBO>(drawData),
+                                                VAOAttrib::POS | VAOAttrib::NORM | VAOAttrib::UV
+                                        )
+                                )
+                        });
+
+        std::string matName = "default";
+        if (shapes[s].mesh.material_ids.size() > 0) {
+            int mat_id = shapes[s].mesh.material_ids[0];
+            if (mat_id >= 0 && mat_id < materials.size()) {
+                matName = materials[mat_id].name.empty() ? "default" : materials[mat_id].name;
+                if (!materials[mat_id].diffuse_texname.empty()) {
+                    addMaterial(matName, materials[mat_id].diffuse_texname, materials[mat_id].shininess);
+                } else {
+                    glm::vec3 Kd(materials[mat_id].diffuse[0], materials[mat_id].diffuse[1], materials[mat_id].diffuse[2]);
+                    addMaterial(matName, Kd, materials[mat_id].shininess);
+                }
+            }
+        }
+
+        m_subshapeMaterial[meshName] = matName;
+    }
 }
 
 std::shared_ptr<Shape> Graphics::addShape(std::string shapeName, std::vector<float> data, VAOAttrib attribs){
@@ -183,6 +322,21 @@ std::shared_ptr<Shape> Graphics::getShape(std::string shapeName){
     return m_shapes.at(shapeName);
 }
 
+void Graphics::drawObj(std::string shapeName, glm::mat4 modelMatrix){
+    for(const auto& kv : m_subshapeMaterial){
+        const std::string& subShapeName = kv.first;
+
+        if(subShapeName.rfind(shapeName + "_", 0) == 0){
+
+            std::shared_ptr<Shape> shape = getShape(subShapeName);
+            std::string matName = kv.second;
+            std::shared_ptr<Material> mat = getMaterial(matName);
+            this->drawShape(shape, modelMatrix, mat);
+        }
+    }
+}
+
+
 void Graphics::drawShape(std::shared_ptr<Shape> myShape, std::shared_ptr<ModelTransform> modelTransform, std::shared_ptr<Material> material){
     if(material == nullptr){
         m_active_shader->setMaterial(getMaterial("default"));
@@ -204,6 +358,8 @@ void Graphics::drawShape(std::shared_ptr<Shape> myShape, glm::mat4 modelMatrix, 
     m_active_shader->setModelTransform(modelMatrix);
     myShape->draw();
 }
+
+
 
 std::vector<float> Graphics::getObjData(std::string filepath){
     tinyobj::attrib_t attrib;
